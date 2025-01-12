@@ -10,8 +10,8 @@ The main focus is on:
 
 ## Contents
 
-- **Article
-  **: [How to Test for Equal JSON Columns in Laravel Models](https://dev.to/tegos/how-to-test-for-equal-json-columns-in-laravel-models-24e)
+- **Article**:
+  [How to Test for Equal JSON Columns in Laravel Models](https://dev.to/tegos/how-to-test-for-equal-json-columns-in-laravel-models-24e)
 - **Example Model**: `PriceSchedule`
 - **Example Test**: `PriceExportScheduleTest`
 

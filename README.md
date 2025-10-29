@@ -1,64 +1,37 @@
 # How to Test for Equal JSON Columns in Laravel Models
 
-This repository contains a guide and example code demonstrating how to test for equality between JSON columns in Laravel models. JSON data, stored as strings in the database, can present challenges for direct comparisons due to differences in encoding. This guide offers a practical solution using `$this->castAsJson()` to ensure reliable and accurate tests.
+![How to Test for Equal JSON Columns in Laravel Models](assets/poster.jpg)
 
-## Overview
-The main focus is on:
-- Understanding challenges in comparing JSON columns.
-- Implementing model and test code to handle JSON attributes.
-- Resolving comparison issues using Laravel-specific solutions.
+When testing models with JSON columns, direct string comparisons can fail because JSON is stored as text in the database - small encoding differences (like key order or spaces) make two equal JSONs appear different.
 
-## Contents
-
-- **Article**:
-  [How to Test for Equal JSON Columns in Laravel Models](https://dev.to/tegos/how-to-test-for-equal-json-columns-in-laravel-models-24e)
-- **Example Model**: `PriceSchedule`
-- **Example Test**: `PriceExportScheduleTest`
-
-## Key Concepts
-1. **Challenges**:
-    - JSON data stored as strings in the database can have encoding differences.
-    - Direct string comparisons may fail even when data is logically equivalent.
-
-2. **Solution**:
-    - Use `$this->castAsJson()` to ensure consistent JSON format before comparison.
-
-## Example Usage
-### Model
-The `PriceSchedule` model includes JSON columns cast to arrays for easy manipulation:
-
-```php
-final class PriceSchedule extends Model
-{
-    protected $fillable = ['user_id', 'price_supplier_id', 'weekday', 'hour', 'is_active'];
-    protected $casts = ['weekday' => 'array', 'hour' => 'array'];
-}
-```
-
-### Test
-The `PriceExportScheduleTest` demonstrates updating and verifying JSON columns:
+## Example
 
 ```php
 $this->assertDatabaseHas(PriceSchedule::class, [
-    'user_id' => $user->id,
-    'is_active' => $updatedData['is_active'],
-    'weekday' => $this->castAsJson($updatedData['weekday']),
-    'hour' => $this->castAsJson($updatedData['hour']),
+    'weekday' => ['mon', 'tue'],
+]);
+````
+
+This may fail even if the data matches logically.
+
+## Fix: Use `$this->castAsJson()`
+
+```php
+$this->assertDatabaseHas(PriceSchedule::class, [
+    'weekday' => $this->castAsJson(['mon', 'tue']),
 ]);
 ```
 
-## Running Tests
-Run the test suite to verify functionality:
+`castAsJson()` ensures both the expected and stored JSON are compared consistently.
 
-```bash
-php artisan test
-```
+## Why It Matters
 
-## License
-This repository is licensed under the MIT License. See the `LICENSE.md` file for more details.
+* JSON data is saved as strings in SQL
+* Minor formatting differences can break tests
+* `$this->castAsJson()` makes your tests stable and predictable
 
-## Contributing
-Contributions are welcome! Please submit a pull request or open an issue if you encounter any problems or have suggestions.
+---
 
-## Feedback
-If you find this guide helpful or have suggestions for improvement, feel free to reach out via issues or discussions.
+**TL;DR:** Always wrap JSON columns with `$this->castAsJson()` in database assertions.
+
+📎 [Read the full article](https://dev.to/tegos/how-to-test-for-equal-json-columns-in-laravel-models-24e)
